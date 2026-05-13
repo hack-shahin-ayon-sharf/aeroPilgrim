@@ -1,9 +1,32 @@
 {% block content %}
-    <h2>Find Flight</h2>
-    <form method="GET" class="" action="{% url 'search_results' %}">
-        
+    <!DOCTYPE html>
+<html>
+<head>
+    <title>
+        Flight Search
+    </title>
+</head>
+
+<body>
+
+    <h1>
+        Search Flights
+    </h1>
+
+    <form
+        method="GET"
+        action="{% url 'search_results' %}"
+    >
+
         {{ form.as_p }}
-        <button type="submit" class="save btn btn-secondary">Save</button>
+
+        <button type="submit">
+            Search
+        </button>
+
     </form>
+
+</body>
+</html>
 {% endblock %}
 

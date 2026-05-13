@@ -29,25 +29,33 @@ class Search(models.Model):
         (365, "1 Year"),
     )
 
-    city_departure = models.CharField(max_length=3, choices=CITY_CHOICES, default='DAC')
-    city_arrival = models.CharField(max_length=3, choices=CITY_CHOICES, default='JED')
+    city_departure = models.CharField(
+        max_length=3,
+        choices=CITY_CHOICES,
+        default="DAC"
+    )
 
-    stay_days = models.IntegerField(choices=DAYS_CHOICES, default=7)
-    timespan_to_search = models.IntegerField(choices=TIMESPAN_CHOICES, default=30)
-    created_at = models.DateTimeField(auto_now_add=True)
+    city_arrival = models.CharField(
+        max_length=3,
+        choices=CITY_CHOICES,
+        default="JED"
+    )
 
-    def clean(self):
-        if self.city_departure == self.city_arrival:
-            raise ValidationError("Departure and arrival cities cannot be the same")
+    stay_days = models.IntegerField(
+        choices=DAYS_CHOICES,
+        default=7
+    )
 
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
+    timespan_to_search = models.IntegerField(
+        choices=TIMESPAN_CHOICES,
+        default=30
+    )
 
-    class Meta:
-        constraints = [
-            models.CheckConstraint(
-                condition=~Q(city_departure=F('city_arrival')),
-                name='city_departure_not_city_arrival'
-            )
-        ]
+    api_response = models.JSONField(
+        null=True,
+        blank=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
