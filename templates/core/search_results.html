@@ -1,0 +1,13 @@
+<h1>
+    Flights: {{ city_departure }} → {{ city_arrival }}
+</h1>
+
+<h2>Top Cheapest Dates</h2>
+
+{% for item in results %}
+    <div style="margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; background-color: #f9f9f9; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); max-width: 400px;">
+        <strong>{{ item.day }}</strong>
+        <p>Price: ${{ item.price }}</p>
+        <p>Type: {{ item.group }}</p>
+    </div>
+{% endfor %}
