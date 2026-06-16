@@ -14,7 +14,7 @@
                 {{ city_arrival }}
             </p>
         </div>
-        <a href="{% url 'home' %}" class="btn-white btn-white--sm">
+        <a href="{% url 'home' %}" class="btn-white btn-white--sm w-full sm:w-auto justify-center">
             <i class="ph ph-magnifying-glass"></i>
             New Search
         </a>
@@ -33,7 +33,7 @@
             {% for flight in results %}
                 <a href="{% url 'flight_detail' search.id flight.flight_date %}"
                    class="result-card glass-card group">
-                    <div class="card-row flex justify-between items-start gap-4">
+                    <div class="card-row card-split-header flex justify-between items-start gap-4">
                         <div>
                             <h3 class="group-hover:text-white/90 transition-colors">{{ flight.flight_date }}</h3>
                             <p class="text-xs text-muted mt-1 flex items-center gap-1">
@@ -54,24 +54,24 @@
                     </div>
 
                     <div class="card-row">
-                        <div class="flex items-center justify-between gap-4">
-                            <div class="flex-1">
-                                <p class="text-2xl font-700 text-white">--:--</p>
-                                <p class="text-xs text-muted mt-1">{{ city_departure }}</p>
+                        <div class="flight-route-row flex items-center justify-between gap-4">
+                            <div class="flex-1 min-w-0">
+                                <p class="text-xl sm:text-2xl font-700 text-white">--:--</p>
+                                <p class="text-xs text-muted mt-1 truncate">{{ city_departure }}</p>
                             </div>
-                            <div class="flex-1 flex items-center gap-2 justify-center">
+                            <div class="route-connector flex-1 flex items-center gap-2 justify-center min-w-[4rem]">
                                 <div class="flex-1 h-px bg-white/20"></div>
-                                <i class="ph ph-airplane text-white/60"></i>
+                                <i class="ph ph-airplane text-white/60 shrink-0"></i>
                                 <div class="flex-1 h-px bg-white/20"></div>
                             </div>
-                            <div class="flex-1 text-right">
-                                <p class="text-2xl font-700 text-white">--:--</p>
-                                <p class="text-xs text-muted mt-1">{{ city_arrival }}</p>
+                            <div class="flex-1 min-w-0 text-right sm:text-right">
+                                <p class="text-xl sm:text-2xl font-700 text-white">--:--</p>
+                                <p class="text-xs text-muted mt-1 truncate">{{ city_arrival }}</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card-row flex flex-wrap gap-4 text-sm">
+                    <div class="card-row card-footer-row flex flex-wrap gap-4 text-sm">
                         <div class="flex items-center gap-2 text-white/80">
                             <i class="ph ph-timer"></i>
                             <span>{{ stay_days }}-day stay</span>
@@ -89,7 +89,7 @@
             {% endfor %}
         </div>
     {% elif rate_limit_exceeded %}
-        <div class="glass-card p-16 text-center">
+        <div class="glass-card empty-state-card p-8 sm:p-16 text-center">
             <div class="text-5xl text-white/40 mb-4">
                 <i class="ph ph-hourglass-medium"></i>
             </div>
@@ -105,7 +105,7 @@
             </a>
         </div>
     {% else %}
-        <div class="glass-card p-16 text-center">
+        <div class="glass-card empty-state-card p-8 sm:p-16 text-center">
             <div class="text-5xl text-white/40 mb-4">
                 <i class="ph ph-magnifying-glass"></i>
             </div>

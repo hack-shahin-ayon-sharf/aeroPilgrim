@@ -108,9 +108,17 @@
     }
 
     .home-right .apple-glass {
-        min-width: 30rem;
+        width: 100%;
         max-width: 54rem;
-        padding: 20px 20px;
+        min-width: 0;
+        padding: 1.25rem;
+    }
+
+    @media (min-width: 901px) {
+        .home-right .apple-glass {
+            min-width: 24rem;
+            padding: 20px;
+        }
     }
 
     .home-routes h2 {
@@ -141,18 +149,70 @@
     }
 
     @media (max-width: 900px) {
+        body.home-page {
+            height: auto;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .home-main {
+            height: auto;
+            min-height: calc(100vh - 4rem);
+            overflow: visible;
+        }
+
+        .home-shell {
+            padding: 1rem 1rem 1.5rem;
+            justify-content: flex-start;
+        }
+
         .home-grid {
             grid-template-columns: 1fr;
             gap: 1.25rem;
-            overflow-y: auto;
+            overflow: visible;
         }
-        body.home-page { overflow: auto; }
-        .home-main { height: auto; min-height: calc(100vh - 4rem); overflow: visible; }
-        .home-left { text-align: center; align-items: center; }
-        .home-hero p { margin: 0 auto; }
-        .home-usps { max-width: 22rem; width: 100%; }
-        .home-right { justify-content: center; }
-        .home-right .apple-glass { max-width: 100%; }
+
+        .home-left {
+            text-align: center;
+            align-items: center;
+        }
+
+        .home-hero p {
+            margin: 0 auto;
+        }
+
+        .home-usps {
+            max-width: 22rem;
+            width: 100%;
+        }
+
+        .home-right {
+            justify-content: center;
+            width: 100%;
+        }
+
+        .home-right .apple-glass {
+            max-width: 100%;
+        }
+
+        .home-routes {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .home-hero h1 {
+            font-size: 1.75rem;
+        }
+
+        .home-usps {
+            gap: 0.65rem;
+        }
+
+        .home-routes .grid {
+            grid-template-columns: 1fr;
+        }
     }
 
     @media (max-height: 720px) and (min-width: 901px) {

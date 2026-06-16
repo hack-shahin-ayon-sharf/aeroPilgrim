@@ -21,19 +21,19 @@
 
     <div class="space-y-6">
         <div class="glass-card overflow-hidden">
-            <div class="card-row flex justify-between items-start gap-4">
-                <div>
+            <div class="card-row card-split-header flex flex-col sm:flex-row justify-between items-start gap-4">
+                <div class="min-w-0">
                     <p class="text-xs text-muted uppercase tracking-wide mb-1">Departure Date</p>
-                    <h2 class="text-2xl font-700">{{ flight.flight_date }}</h2>
-                    <p class="text-sm text-muted mt-2 flex items-center gap-2">
+                    <h2 class="text-xl sm:text-2xl font-700">{{ flight.flight_date }}</h2>
+                    <p class="text-sm text-muted mt-2 flex flex-wrap items-center gap-2">
                         <i class="ph ph-timer"></i>
                         {{ trip.stay_days }}-day Umrah stay
                         {% if trip.return_date %}· Return ~{{ trip.return_date }}{% endif %}
                     </p>
                 </div>
-                <div class="text-right">
+                <div class="detail-price-block text-left sm:text-right w-full sm:w-auto">
                     <p class="text-xs text-muted mb-1">From</p>
-                    <p class="text-4xl font-700">${{ flight.price }}</p>
+                    <p class="detail-price text-3xl sm:text-4xl font-700">${{ flight.price }}</p>
                     <span class="badge mt-2
                         {% if flight.price_group == 'Low' %}badge-low
                         {% elif flight.price_group == 'High' %}badge-high
@@ -44,19 +44,19 @@
             </div>
 
             <div class="card-row">
-                <div class="flex items-center justify-between gap-4">
-                    <div class="flex-1">
-                        <p class="text-2xl font-700">--:--</p>
-                        <p class="text-xs text-muted mt-1">{{ city_departure }}</p>
+                <div class="flight-route-row flex items-center justify-between gap-4">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xl sm:text-2xl font-700">--:--</p>
+                        <p class="text-xs text-muted mt-1 truncate">{{ city_departure }}</p>
                     </div>
-                    <div class="flex-1 flex items-center gap-2 justify-center">
+                    <div class="route-connector flex-1 flex items-center gap-2 justify-center min-w-[4rem]">
                         <div class="flex-1 h-px bg-white/20"></div>
-                        <i class="ph ph-airplane text-white/60"></i>
+                        <i class="ph ph-airplane text-white/60 shrink-0"></i>
                         <div class="flex-1 h-px bg-white/20"></div>
                     </div>
-                    <div class="flex-1 text-right">
-                        <p class="text-2xl font-700">--:--</p>
-                        <p class="text-xs text-muted mt-1">{{ city_arrival }}</p>
+                    <div class="flex-1 min-w-0 text-right">
+                        <p class="text-xl sm:text-2xl font-700">--:--</p>
+                        <p class="text-xs text-muted mt-1 truncate">{{ city_arrival }}</p>
                     </div>
                 </div>
                 <p class="text-xs text-muted text-center mt-4">
@@ -84,8 +84,8 @@
             </div>
         </div>
 
-        <div class="glass-card p-6">
-            <div class="flex items-center gap-3 mb-6">
+        <div class="glass-card p-4 sm:p-6">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
                 <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
                     <i class="ph ph-sparkle text-xl text-white"></i>
                 </div>
@@ -122,7 +122,7 @@
                     <i class="ph ph-x text-lg"></i>
                 </button>
             </div>
-            <div id="ai-result-content" class="p-6 leading-relaxed whitespace-pre-wrap"></div>
+            <div id="ai-result-content" class="p-4 sm:p-6 leading-relaxed whitespace-pre-wrap overflow-x-auto"></div>
         </div>
 
         <div id="ai-loading" class="hidden glass-sm rounded-xl p-8 text-center">
