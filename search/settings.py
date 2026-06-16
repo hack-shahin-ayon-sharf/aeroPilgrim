@@ -2,6 +2,7 @@
 Django settings for search project.
 """
 
+import os
 from pathlib import Path
 
 from decouple import config, Csv
@@ -15,11 +16,24 @@ SECRET_KEY = config("SECRET_KEY", default="django-insecure-change-me")
 DEBUG = config("DEBUG", default=True, cast=bool)
 
 ALLOWED_HOSTS = [
-        '127.0.0.1',
-        'localhost',
-        '.railway.app'
+    "127.0.0.1",
+    "localhost",
+    ".railway.app",
+]
+
+# CSRF needs full URLs with scheme (wildcards are NOT supported).
+CSRF_TRUSTED_ORIGINS = list(config("CSRF_TRUSTED_ORIGINS", default="", cast=Csv()))
+if not CSRF_TRUSTED_ORIGINS:
+    CSRF_TRUSTED_ORIGINS = [
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
     ]
-CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", default="", cast=Csv())
+
+_railway_domain = os.environ.get("RAILWAY_PUBLIC_DOMAIN")
+if _railway_domain:
+    _railway_origin = f"https://{_railway_domain}"
+    if _railway_origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(_railway_origin)
 
 FLIGHT_API_KEY = config("FLIGHT_API_KEY", default="")
 FLIGHT_API_HOST = config("FLIGHT_API_HOST", default="")
