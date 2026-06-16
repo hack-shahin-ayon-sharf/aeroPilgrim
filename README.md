@@ -1,7 +1,7 @@
 # aeroPilgrim
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue?style=flat-square&logo=python)](https://www.python.org/)
-[![Django](https://img.shields.io/badge/Django-3.2+-green?style=flat-square&logo=django)](https://www.djangoproject.com/)
+[![Django](https://img.shields.io/badge/Django-5.0+-green?style=flat-square&logo=django)](https://www.djangoproject.com/)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 
 A modern, AI-powered flight search and booking assistant platform tailored specifically for Umrah pilgrims. AeroPilgrim leverages real-time flight data from the Sky Scrapper API combined with intelligent AI recommendations to help pilgrims plan their perfect Umrah journey.
