@@ -13,11 +13,12 @@ load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = config("SECRET_KEY", default="django-insecure-change-me")
 DEBUG = config("DEBUG", default=True, cast=bool)
-ALLOWED_HOSTS = config(
-    "ALLOWED_HOSTS",
-    default="localhost,127.0.0.1,.railway.app",
-    cast=Csv(),
-)
+
+ALLOWED_HOSTS = [
+        '127.0.0.1',
+        'localhost',
+        '.railway.app'
+    ]
 CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", default="", cast=Csv())
 
 FLIGHT_API_KEY = config("FLIGHT_API_KEY", default="")
