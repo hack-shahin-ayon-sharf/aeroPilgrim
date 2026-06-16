@@ -15,4 +15,5 @@ RUN chmod +x /app/start.sh
 
 EXPOSE 8000
 
+# At startup: makemigrations -> migrate -> collectstatic -> gunicorn
 CMD ["/app/start.sh"]

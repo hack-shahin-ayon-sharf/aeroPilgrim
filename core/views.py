@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from datetime import timedelta, datetime
@@ -12,6 +11,11 @@ from .models import Search
 from .forms import SearchForm, RegistrationForm, LoginForm
 from .services.flight_api import get_flight_data
 from .services.ai_service import AI_ACTIONS, generate_ai_response
+from .services.rate_limit import (
+    find_cached_search,
+    ip_can_call_api,
+    record_api_call,
+)
 
 
 def _city_label(code):
@@ -131,24 +135,13 @@ def searchResults(request):
         messages.error(request, "Invalid search parameters.")
         return redirect("home")
 
-    search = Search.objects.filter(
-        city_departure=city_departure,
-        city_arrival=city_arrival,
-        stay_days=stay_days,
-        timespan_to_search=timespan,
-    ).order_by("-created_at").first()
-
-    four_days_ago = timezone.now() - timedelta(days=100)
-
-    cache_valid = (
-        search
-        and search.api_response
-        and search.created_at >= four_days_ago
+    search = find_cached_search(
+        city_departure, city_arrival, stay_days, timespan
     )
 
-    if cache_valid:
+    if search:
         data = search.api_response
-    else:
+    elif ip_can_call_api(request):
         data = get_flight_data(city_departure, city_arrival)
 
         Search.objects.filter(
@@ -165,6 +158,16 @@ def searchResults(request):
             timespan_to_search=timespan,
             api_response=data,
         )
+        record_api_call(request)
+    else:
+        return render(request, "core/search_results.html", {
+            "results": [],
+            "search": None,
+            "rate_limit_exceeded": True,
+            "city_departure": _city_label(city_departure),
+            "city_arrival": _city_label(city_arrival),
+            "stay_days": stay_days,
+        })
 
     days = data["data"]["flights"]["days"]
     top_results = [_normalize_flight(d) for d in sorted(days, key=lambda x: x["price"])[:5]]

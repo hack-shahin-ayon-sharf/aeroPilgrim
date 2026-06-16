@@ -3,6 +3,7 @@ set -euo pipefail
 
 export DJANGO_SETTINGS_MODULE="${DJANGO_SETTINGS_MODULE:-search.settings}"
 
+python manage.py makemigrations --noinput
 python manage.py migrate --noinput
 python manage.py collectstatic --noinput
 

@@ -60,8 +60,14 @@ class Search(models.Model):
     created_at = models.DateTimeField(
         auto_now_add=True
     )
-    
-    
-    
+
     def __str__(self):
         return f"{self.city_departure} to {self.city_arrival} in {self.timespan_to_search} days"
+
+
+class SearchRateLimit(models.Model):
+    ip_address = models.GenericIPAddressField(unique=True)
+    last_api_call_at = models.DateTimeField()
+
+    def __str__(self):
+        return f"{self.ip_address} @ {self.last_api_call_at:%Y-%m-%d %H:%M}"
