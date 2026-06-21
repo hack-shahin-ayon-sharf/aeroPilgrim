@@ -122,6 +122,9 @@ def searchView(request):
 
 
 
+
+
+
 @login_required(login_url='login')
 def searchResults(request):
     """Display search results - only accessible to logged-in users"""
