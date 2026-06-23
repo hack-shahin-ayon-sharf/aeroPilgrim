@@ -303,11 +303,25 @@ def botSearch(request):
         return JsonResponse({"error": "stay_days and timespan_to_search must be integers"}, status=400)
 
     search = find_cached_search(city_departure, city_arrival, stay_days, timespan)
+    data = None
 
-    if search:
+    if search and extract_flight_days(search.api_response or {}):
         data = search.api_response
-    elif ip_can_call_api(request):
-        data = get_flight_data(city_departure, city_arrival)
+    elif search:
+        search.delete()
+        search = None
+
+    if data is None:
+        if not ip_can_call_api(request):
+            return JsonResponse({
+                "error": "rate_limit_exceeded",
+                "message": "Search limit reached for this route. Try again later or use a previously searched route.",
+            }, status=429)
+
+        try:
+            data = get_flight_data(city_departure, city_arrival, timespan)
+        except FlightAPIError as exc:
+            return JsonResponse({"error": str(exc)}, status=502)
 
         Search.objects.filter(
             city_departure=city_departure,
@@ -324,14 +338,13 @@ def botSearch(request):
             api_response=data,
         )
         record_api_call(request)
-    else:
-        return JsonResponse({
-            "error": "rate_limit_exceeded",
-            "message": "Search limit reached for this route. Try again later or use a previously searched route.",
-        }, status=429)
 
-    days = data["data"]["flights"]["days"]
-    top_results = [_normalize_flight(d) for d in sorted(days, key=lambda x: x["price"])[:5]]
+    days = extract_flight_days(data)
+    priced_days = [d for d in days if d.get("price") is not None]
+    top_results = [
+        _normalize_flight(d)
+        for d in sorted(priced_days, key=lambda x: x["price"])[:5]
+    ]
 
     results = []
     for flight in top_results:

@@ -133,7 +133,7 @@
         import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
 
         createChat({
-            webhookUrl: 'https://shahin121.app.n8n.cloud/webhook/eec1707b-4070-45e5-9d42-539c3eb430bc/chat'
+            webhookUrl: '{{ N8N_CHAT_WEBHOOK_URL|escapejs }}'
         });
     </script>
     {% endif %}
