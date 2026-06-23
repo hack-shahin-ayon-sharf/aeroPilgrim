@@ -15,7 +15,8 @@ from .models import Search
 from .forms import SearchForm, RegistrationForm, LoginForm
 from .services.flight_api import FlightAPIError, extract_flight_days, get_flight_data
 from .services.ai_service import AI_ACTIONS, generate_ai_response
-from .services.chat_service import build_trip_chat_context, generate_chat_response
+from .services.chat_service import build_trip_chat_context
+from .services.n8n_chat_service import N8nChatError, send_n8n_message
 from .services.rate_limit import (
     find_cached_search,
     ip_can_call_api,
@@ -274,7 +275,7 @@ def aiAction(request, search_id, flight_date):
 @login_required(login_url='login')
 @require_POST
 def tripChat(request, search_id, flight_date):
-    """Conversational assistant with trip data loaded from the database."""
+    """Proxy chat messages to n8n with this trip's database context attached."""
     search = get_object_or_404(Search, pk=search_id)
     flight = _get_flight_from_search(search, flight_date)
 
@@ -284,25 +285,55 @@ def tripChat(request, search_id, flight_date):
     try:
         body = json.loads(request.body)
         message = (body.get("message") or "").strip()
-        history = body.get("history") or []
+        session_id = body.get("session_id") or (
+            f"trip-{search_id}-{flight_date}-u{request.user.id}"
+        )
     except json.JSONDecodeError:
         return JsonResponse({"success": False, "error": "Invalid request."}, status=400)
 
     if not message:
         return JsonResponse({"success": False, "error": "Message is required."}, status=400)
 
-    context = build_trip_chat_context(search, flight)
-    content = generate_chat_response(message, context, history)
+    trip_context = build_trip_chat_context(search, flight)
+
+    try:
+        content = send_n8n_message(message, session_id, trip_context)
+    except N8nChatError as exc:
+        return JsonResponse({"success": False, "error": str(exc)}, status=502)
 
     return JsonResponse({
         "success": True,
         "content": content,
-        "trip_context": {
-            "route": context["route"],
-            "departure_date": context["selected_departure_date"],
-            "price_usd": context["selected_price_usd"],
-        },
+        "session_id": session_id,
     })
+
+
+@csrf_exempt
+@require_GET
+def botTripContext(request):
+    """
+    Return saved trip data from the database for the n8n workflow.
+    GET /api/bot-trip-context/?search_id=3&flight_date=2026-06-29
+    Header: X-Bot-Api-Key: <secret>
+    """
+    if not _check_bot_api_key(request):
+        return JsonResponse({"error": "Unauthorized"}, status=401)
+
+    try:
+        search_id = int(request.GET.get("search_id", ""))
+    except (TypeError, ValueError):
+        return JsonResponse({"error": "search_id is required"}, status=400)
+
+    flight_date = request.GET.get("flight_date")
+    if not flight_date:
+        return JsonResponse({"error": "flight_date is required"}, status=400)
+
+    search = get_object_or_404(Search, pk=search_id)
+    flight = _get_flight_from_search(search, flight_date)
+    if not flight:
+        return JsonResponse({"error": "Flight not found for this search."}, status=404)
+
+    return JsonResponse(build_trip_chat_context(search, flight))
 
 
 def _check_bot_api_key(request):

@@ -19,6 +19,7 @@ urlpatterns = [
         name='flight_detail',
     ),
     path("api/bot-search/", views.botSearch, name="bot_search"),
+    path("api/bot-trip-context/", views.botTripContext, name="bot_trip_context"),
     path(
         'search/flight/<int:search_id>/<str:flight_date>/ai/',
         views.aiAction,

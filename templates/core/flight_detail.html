@@ -85,14 +85,20 @@
         </div>
 
         <div class="glass-card overflow-hidden trip-chat" id="trip-chat">
-            <div class="card-row flex flex-col sm:flex-row sm:items-center gap-3 border-b border-white/10">
-                <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                    <i class="ph ph-chats-circle text-xl text-white"></i>
+            <div class="trip-chat-header card-row flex flex-col sm:flex-row sm:items-center gap-3">
+                <div class="trip-chat-header-icon w-11 h-11 rounded-full flex items-center justify-center shrink-0">
+                    <i class="ph ph-robot text-xl text-white"></i>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <h3 class="text-lg font-600">Trip Assistant</h3>
-                    <p class="text-sm text-muted">
-                        Ask about this flight, cheaper dates, hotels, visa, or your itinerary — answers use your saved search data.
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h3 class="text-lg font-600">UmrahFly Assistant</h3>
+                        <span class="trip-chat-status">
+                            <span class="trip-chat-status-dot"></span>
+                            Online
+                        </span>
+                    </div>
+                    <p class="text-sm text-muted mt-1">
+                        Powered by n8n — knows this trip's saved prices, dates, and route from your database.
                     </p>
                 </div>
             </div>
@@ -179,6 +185,7 @@
     const csrfToken = '{{ csrf_token }}';
     const aiUrl = '{% url "ai_action" search.id flight.flight_date %}';
     const chatUrl = '{% url "trip_chat" search.id flight.flight_date %}';
+    const chatSessionId = 'trip-{{ search.id }}-{{ flight.flight_date }}-{{ request.user.id }}';
     const panel = document.getElementById('ai-result-panel');
     const loading = document.getElementById('ai-loading');
     const resultTitle = document.getElementById('ai-result-title');
@@ -190,7 +197,6 @@
     const chatSend = document.getElementById('trip-chat-send');
     const chatTyping = document.getElementById('trip-chat-typing');
     const chatSuggestions = document.getElementById('trip-chat-suggestions');
-    const chatHistory = [];
 
     function simpleMarkdown(text) {
         return text
@@ -219,7 +225,7 @@
         avatar.className = 'trip-chat-avatar';
         avatar.innerHTML = role === 'user'
             ? '<i class="ph ph-user"></i>'
-            : '<i class="ph ph-sparkle"></i>';
+            : '<i class="ph ph-robot"></i>';
 
         const bubble = document.createElement('div');
         bubble.className = 'trip-chat-bubble';
@@ -247,7 +253,6 @@
         if (!trimmed) return;
 
         appendChatMessage('user', trimmed);
-        chatHistory.push({ role: 'user', content: trimmed });
         chatInput.value = '';
         setChatBusy(true);
 
@@ -260,14 +265,13 @@
                 },
                 body: JSON.stringify({
                     message: trimmed,
-                    history: chatHistory.slice(0, -1),
+                    session_id: chatSessionId,
                 }),
             });
             const data = await response.json();
 
             if (data.success) {
                 appendChatMessage('assistant', simpleMarkdown(data.content), true);
-                chatHistory.push({ role: 'assistant', content: data.content });
             } else {
                 appendChatMessage('assistant', data.error || 'Something went wrong. Please try again.');
             }
@@ -282,7 +286,7 @@
     appendChatMessage(
         'assistant',
         simpleMarkdown(
-            'Welcome! I can help with **{{ city_departure }} → {{ city_arrival }}** on **{{ flight.flight_date }}** ' +
+            '**Assalamu alaikum!** I\'m your UmrahFly assistant for **{{ city_departure }} → {{ city_arrival }}** on **{{ flight.flight_date }}** ' +
             '(from **${{ flight.price }}**, {{ trip.stay_days }}-day stay). Ask about cheaper dates, hotels, visa, or your itinerary.'
         ),
         true
