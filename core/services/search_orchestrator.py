@@ -411,7 +411,7 @@ def run_search(
                 error=(
                     f"You've used all {exc.daily_quota} of today's search"
                     f"{'es' if exc.daily_quota != 1 else ''} "
-                    f"({exc.plan_label()} plan). Upgrade to Premium or wait "
+                    f"({exc.plan_label} plan). Upgrade to Premium or wait "
                     f"until {exc.resets_at:%H:%M} UTC for the quota to reset."
                 ),
                 quota_exceeded=True,

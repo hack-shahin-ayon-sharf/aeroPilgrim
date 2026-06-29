@@ -187,7 +187,10 @@ class QuotaExceeded(Exception):
     """Raised when the user has exhausted their rolling-24h API search quota."""
 
     def __init__(self, plan_label, daily_quota, resets_at):
-        super().__init__(str(QuotaExceeded))
+        super().__init__(
+            f"Quota exceeded for '{plan_label}' plan "
+            f"({daily_quota}/day). Resets at {resets_at:%H:%M} UTC."
+        )
         self.plan_label = plan_label
         self.daily_quota = daily_quota
         self.resets_at = resets_at
